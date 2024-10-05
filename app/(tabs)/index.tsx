@@ -7,7 +7,9 @@ import { useEffect } from 'react';
 import { Image, StyleSheet, Platform, Text, View, ScrollView } from 'react-native';
 import ExpenseList from "@/data/expenseList.json"
 import IncomeList from "@/data/income.json"
+import SpendingList from "@/data/spending.json"
 import IncomeBlock from '@/components/IncomeBlock';
+import SpendingBlock from '@/components/SpendingBlock';
 
 
 export default function HomeScreen() {
@@ -27,6 +29,7 @@ export default function HomeScreen() {
           <MyExpense />
           <ExpenseBlock expenseList={ExpenseList}/>
           <IncomeBlock incomeList={IncomeList}/>
+          <SpendingBlock spendingList={SpendingList}/>
         </ScrollView>
       </View>
 
