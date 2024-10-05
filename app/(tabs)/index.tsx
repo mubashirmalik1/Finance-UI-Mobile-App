@@ -6,6 +6,8 @@ import { Stack, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
 import { Image, StyleSheet, Platform, Text, View, ScrollView } from 'react-native';
 import ExpenseList from "@/data/expenseList.json"
+import IncomeList from "@/data/income.json"
+import IncomeBlock from '@/components/IncomeBlock';
 
 
 export default function HomeScreen() {
@@ -24,6 +26,7 @@ export default function HomeScreen() {
         <ScrollView showsVerticalScrollIndicator={false} style={{gap:30}}>
           <MyExpense />
           <ExpenseBlock expenseList={ExpenseList}/>
+          <IncomeBlock incomeList={IncomeList}/>
         </ScrollView>
       </View>
 
@@ -34,10 +37,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //  justifyContent: 'center',
-    //  alignItems: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: Colors.black,
     paddingHorizontal: 20
+
   },
   text: {
     color: Colors.white

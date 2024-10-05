@@ -19,7 +19,7 @@ const MyExpense = () => {
     <View style={{ gap: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
     <View>
       <Text style={{ color: Colors.white, fontSize: 16 }}>
-        My <Text style={{ fontWeight: 700 }}>Expense</Text>
+        My <Text style={{ fontWeight:'900' }}>Expense</Text>
       </Text>
       <Text style={{ color: Colors.white, fontSize: 36, fontWeight: 700 }}>
         $1432.
