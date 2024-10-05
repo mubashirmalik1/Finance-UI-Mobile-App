@@ -1,0 +1,26 @@
+[
+    {
+        "id": "4",
+        "name": "Rent",
+        "price": "222.33",
+        "percentage": "10"
+    },
+    {
+        "id": "2",
+        "name": "Food",
+        "price": "222.33",
+        "percentage": "20"
+    },
+    {
+        "id": "3",
+        "name": "Saving",
+        "price": "222.33",
+        "percentage": "10"
+    },
+    {
+        "id": "1",
+        "name": "Housing",
+        "price": "222.33",
+        "percentage": "60"
+    }
+]
