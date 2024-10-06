@@ -83,6 +83,9 @@ export const setupDatabase = async () => {
   } catch (error) {
     console.error('Error setting up the database:', error);
   }
+  finally{
+
+  }
 };
 
 

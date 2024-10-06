@@ -1,10 +1,47 @@
 import { FlatList, ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Colors from '@/constants/Colors'
-import { ExpenseList } from '@/scripts/types'
+//import { ExpenseList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons'
+import {getExpenseTypes} from '@/src/database/expenseOperations'
 
-const ExpenseBlock = ({ expenseList }: { expenseList: ExpenseList[] }) => {
+// Define the ExpenseList type
+type ExpenseList = {
+  id: number;
+  name: string;
+  price?: string;
+  percentage?: string;
+};
+
+
+const ExpenseBlock = () => {
+  const [expenseList, setExpenseList] = useState<ExpenseList[]>([]);
+
+   // Fetch expenses from SQLite database on component mount
+   useEffect(() => {
+    fetchExpenseTypes();
+  }, []);
+
+  const fetchExpenseTypes = async () => {
+    try {
+      const types = await getExpenseTypes();
+      const expenses: ExpenseList[] = [];
+      for (const row of types) {
+          expenses.push({
+            id: row.id,
+            name: row.name,
+            price: '0.00', 
+            percentage: '0'
+          });
+        }
+      setExpenseList(expenses);
+    } catch (error) {
+      console.error('Error fetching expense types:', error);
+    } finally {
+    //  setLoading(false);
+    }
+  };
+  
   const renderItem: ListRenderItem<Partial<ExpenseList>> = ({ item, index }) => {
     if (index == 0) {
       return (
@@ -17,6 +54,8 @@ const ExpenseBlock = ({ expenseList }: { expenseList: ExpenseList[] }) => {
       )
     }
     let amount = item.price?.split('.');
+    let fAmount = amount? amount[0]:'0';
+    let lAmount = amount? amount[1]:'00';
     return (
       <View style={[styles.ExpenseBlock, {
         backgroundColor:
@@ -42,8 +81,8 @@ const ExpenseBlock = ({ expenseList }: { expenseList: ExpenseList[] }) => {
               : item.name == 'Saving'
                 ? Colors.black
                 : Colors.white
-        }]}>${amount[0]}.
-          <Text style={{ fontSize: 16 }}>{amount[1]}</Text>
+        }]}>${fAmount}.
+          <Text style={{ fontSize: 16 }}>{lAmount}</Text>
         </Text>
 
         <View style={styles.expenseBlockView3}>

@@ -26,7 +26,7 @@ export default function HomeScreen() {
       <View style={[styles.container, { paddingTop: 70 }]}>
         <ScrollView showsVerticalScrollIndicator={false} style={{gap:30}}>
           <MyExpense />
-          <ExpenseBlock expenseList={ExpenseList}/>
+          <ExpenseBlock />
           <IncomeBlock incomeList={IncomeList}/>
           <SpendingBlock spendingList={SpendingList}/>
         </ScrollView>
