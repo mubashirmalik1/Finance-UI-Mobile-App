@@ -1,11 +1,25 @@
 import { FlatList, ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import Colors from '@/constants/Colors'
 import { IncomeList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons';
 
 export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }) {
+
+    const [incomes, setIncomes] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+
     const renderItems: ListRenderItem<Partial<IncomeList>> = ({ item, index }) => {
+        if (index == 0) {
+            return (
+              <Pressable onPress={() => alert('ok')}>
+                <View style={styles.addItemBtn}>
+                  <Feather name="plus" size={22} color={'#ccc'}></Feather>
+                </View>
+      
+              </Pressable>
+            )
+          }
         let amount = item.amount?.split('.');
         let fAmount = amount ? amount[0] : '0';
         let lAmount = amount ? amount[1] : '00';
@@ -17,7 +31,6 @@ export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }
         else if (item.name == "Interests") {
             icon = <Feather name="briefcase" size={22} color={Colors.white} />
         }
-
 
         return (
             <View style={{
@@ -51,6 +64,10 @@ export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }
             </View>
         );
     };
+
+
+    const StaticItem = [{ name: 'Add Item' }]
+
     return (
         <View style={{ marginVertical: 30 }}>
             <Text style={{ color: Colors.white, fontSize: 16,marginBottom: 20  }}>
@@ -58,7 +75,7 @@ export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }
             </Text>
 
             <FlatList
-                data={incomeList}
+                data={StaticItem.concat(incomeList)}
                 renderItem={renderItems}
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -67,4 +84,16 @@ export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }
     )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    addItemBtn: {
+        flex: 1,
+        borderWidth: 2,
+        borderColor: '#666',
+        borderStyle: 'dashed',
+        borderRadius: 20,
+        marginRight: 20,
+        padding: 20,
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+})

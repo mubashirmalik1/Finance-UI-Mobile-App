@@ -18,7 +18,7 @@ type ExpenseList = {
 const ExpenseBlock = () => {
   const [expenseList, setExpenseList] = useState<ExpenseList[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const count = useRef(2000);
+ // const count = useRef(2000); //for testing counter
 
   // Fetch expenses from SQLite database on component mount
   useEffect(() => {
@@ -45,13 +45,13 @@ const ExpenseBlock = () => {
     }
   };
 
-  const handleAddExpenseType = async (name) => {
+  const handleAddExpenseType = async (name: any) => {
     try {
-      count.current += 1;
+     // count.current += 1;
       await addExpenseType(name);
       const updatedTypes = await getExpenseTypes(); // Refresh the list after adding
       // Sort by id in descending order (latest first)
-      const sortedTypes = updatedTypes.sort((a, b) => b.id - a.id);
+      const sortedTypes = updatedTypes.sort((a: { id: number }, b: { id: number }) => b.id - a.id);
       console.log('data enter');
       setExpenseList(sortedTypes);
     } catch (error) {
