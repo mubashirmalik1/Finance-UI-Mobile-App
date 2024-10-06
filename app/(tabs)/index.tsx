@@ -10,14 +10,13 @@ import IncomeList from "@/data/income.json"
 import SpendingList from "@/data/spending.json"
 import IncomeBlock from '@/components/IncomeBlock';
 import SpendingBlock from '@/components/SpendingBlock';
+import { setupDatabase } from '@/src/database/setup';
 
 
 export default function HomeScreen() {
-  //const navigation = useNavigation();
-
-  // useEffect(()=>{
-  //   navigation.setOptions({headerShown:false})
-  // })
+   useEffect(()=>{
+    setupDatabase();
+   }, [])
   return (
     <>
       <Stack.Screen options={{
