@@ -3,11 +3,18 @@ import React, { useState } from 'react'
 import Colors from '@/constants/Colors'
 import { IncomeList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons';
+import {addIncome} from '@/src/database/incomeOperations'
 
 export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }) {
 
     const [incomes, setIncomes] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+
+    const handleAddIncome = async (incomeData) => {
+        await addIncome(incomeData.name, incomeData.amount, incomeData.date, incomeData.incomeType); // Add the income data to the database
+        const updatedIncomes = await getIncomes(); // Refresh the list
+        setIncomes(updatedIncomes); // Update the state with the new list
+      };
 
     const renderItems: ListRenderItem<Partial<IncomeList>> = ({ item, index }) => {
         if (index == 0) {

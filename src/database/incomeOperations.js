@@ -22,3 +22,13 @@ export const addIncome = async (name, amount, date, incomeType, userId = 1) => {
       console.error('Error adding income:', error);
     }
   };
+
+  export const getIncomes = async () => {
+    try {
+      const db = await openDatabase();
+      const rows = await db.getAllAsync('SELECT * FROM income');
+      return rows;  // returns an array of income records
+    } catch (error) {
+      console.error('Error fetching incomes:', error);
+    }
+  };
