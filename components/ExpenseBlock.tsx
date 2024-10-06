@@ -1,9 +1,10 @@
 import { FlatList, ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Colors from '@/constants/Colors'
 //import { ExpenseList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons'
-import {getExpenseTypes} from '@/src/database/expenseOperations'
+import { getExpenseTypes, addExpenseType } from '@/src/database/expenseOperations'
+import AddExpenseTypeModal from "@/components/AddExpenseTypeModal"
 
 // Define the ExpenseList type
 type ExpenseList = {
@@ -16,9 +17,11 @@ type ExpenseList = {
 
 const ExpenseBlock = () => {
   const [expenseList, setExpenseList] = useState<ExpenseList[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const count = useRef(2000);
 
-   // Fetch expenses from SQLite database on component mount
-   useEffect(() => {
+  // Fetch expenses from SQLite database on component mount
+  useEffect(() => {
     fetchExpenseTypes();
   }, []);
 
@@ -27,25 +30,39 @@ const ExpenseBlock = () => {
       const types = await getExpenseTypes();
       const expenses: ExpenseList[] = [];
       for (const row of types) {
-          expenses.push({
-            id: row.id,
-            name: row.name,
-            price: '0.00', 
-            percentage: '0'
-          });
-        }
+        expenses.push({
+          id: row.id,
+          name: row.name,
+          price: '0.00',
+          percentage: '0'
+        });
+      }
       setExpenseList(expenses);
     } catch (error) {
       console.error('Error fetching expense types:', error);
     } finally {
-    //  setLoading(false);
+      //  setLoading(false);
     }
   };
-  
+
+  const handleAddExpenseType = async (name) => {
+    try {
+      count.current += 1;
+      await addExpenseType(name);
+      const updatedTypes = await getExpenseTypes(); // Refresh the list after adding
+      // Sort by id in descending order (latest first)
+      const sortedTypes = updatedTypes.sort((a, b) => b.id - a.id);
+      console.log('data enter');
+      setExpenseList(sortedTypes);
+    } catch (error) {
+      console.error('Error adding expense type:', error);
+    }
+  };
+
   const renderItem: ListRenderItem<Partial<ExpenseList>> = ({ item, index }) => {
     if (index == 0) {
       return (
-        <Pressable onPress={() => alert('ok')}>
+        <Pressable onPress={() => setModalVisible(true)}>
           <View style={styles.addItemBtn}>
             <Feather name="plus" size={22} color={'#ccc'}></Feather>
           </View>
@@ -54,8 +71,8 @@ const ExpenseBlock = () => {
       )
     }
     let amount = item.price?.split('.');
-    let fAmount = amount? amount[0]:'0';
-    let lAmount = amount? amount[1]:'00';
+    let fAmount = amount ? amount[0] : '0';
+    let lAmount = amount ? amount[1] : '00';
     return (
       <View style={[styles.ExpenseBlock, {
         backgroundColor:
@@ -93,7 +110,7 @@ const ExpenseBlock = () => {
                 : item.name == 'Saving'
                   ? Colors.black
                   : Colors.white
-          }]}>{item.percentage}%</Text>
+          }]}>{item.percentage ? item.percentage : '0'}%</Text>
         </View>
       </View>
     )
@@ -101,11 +118,20 @@ const ExpenseBlock = () => {
 
   const StaticItem = [{ name: 'Add Item' }]
   return (
-    <FlatList data={StaticItem.concat(expenseList)}
-      renderItem={renderItem}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-    />
+    <>
+
+      <FlatList data={StaticItem.concat(expenseList)}
+        renderItem={renderItem}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      />
+
+      <AddExpenseTypeModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onAddExpenseType={handleAddExpenseType}
+      />
+    </>
   )
 }
 
@@ -137,17 +163,17 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 10
   },
-  addItemBtn:{
+  addItemBtn: {
     flex: 1,
-     borderWidth: 2,
-      marginTop: 30,
-       borderColor: '#666', 
-       borderStyle: 'dashed',
-        borderRadius: 20, 
-        marginRight: 20, 
-        padding: 20,
-         justifyContent: 'center', 
-         alignItems: 'center'
+    borderWidth: 2,
+    marginTop: 30,
+    borderColor: '#666',
+    borderStyle: 'dashed',
+    borderRadius: 20,
+    marginRight: 20,
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
 
