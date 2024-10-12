@@ -69,20 +69,13 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
             onChangeText={setAmount}
           />
 
-          {/* <TextInput
-            style={styles.input}
-            placeholder="Date (YYYY-MM-DD)"
-            placeholderTextColor="#666"
-            value={date}
-            onChangeText={setDate}
-            /> */}
-
           <DatePickerInput
             style={styles.input}
             placeholder="Date (YYYY-MM-DD)"
             placeholderTextColor="#666"
             onSelectDate={handleDateSelect}
           />
+          <View style={styles.pickerContainer}>
           <Picker
             selectedValue={incomeType}
             onValueChange={(itemValue) => setIncomeType(itemValue)}
@@ -93,6 +86,7 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
               <Picker.Item key={type.id} label={type.name} value={type.id} />
             ))}
           </Picker>
+          </View>
 
           <View style={styles.buttonContainer}>
             <Pressable onPress={closeModal} style={{ backgroundColor: Colors.grey, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 }}>
