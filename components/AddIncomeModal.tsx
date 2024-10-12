@@ -3,12 +3,13 @@ import { Modal, View, Text, TextInput, Button, StyleSheet, Pressable } from 'rea
 import { Picker } from '@react-native-picker/picker';
 import Colors from '@/constants/Colors';
 import { getIncomeTypes } from '@/src/database/incomeOperations';
+import DatePickerInput from './DatePicker';
 
 
 const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [incomeType, setIncomeType] = useState(1); // Default value for the picker
   const [incomeTypesList, setIncomeTypeList] = useState([]);
 
@@ -17,12 +18,16 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
       const incomeTypes = await getIncomeTypes();
       setIncomeTypeList(incomeTypes);
     };
-  
+
     fetchIncomeTypes();
   }, []);
 
+  const handleDateSelect = (date) => {
+    setDate(date); // Update state with selected date
+  };
+
   const handleAdd = () => {
-    if ( amount.trim() && date.trim() && incomeType) {
+    if (amount.trim() && date.trim() && incomeType) {
       const parsedAmount = parseFloat(amount);
       if (isNaN(parsedAmount)) {
         alert('Please enter a valid amount.');
@@ -33,12 +38,20 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
       onAddIncome({ name, amount: parsedAmount, date, incomeType });
       setName(''); // Reset the input fields
       setAmount('');
-      setDate('');
-      setIncomeType('salary'); // Reset income type
+      setDate(new Date().toISOString().split('T')[0]);
+      setIncomeType(1); // Reset income type
       onClose(); // Close the modal
     } else {
       alert('Please fill out all fields.');
     }
+  };
+
+  const closeModal = () => {
+    setName(''); 
+    setAmount('');
+    setDate(new Date().toISOString().split('T')[0]);
+    setIncomeType(1); 
+    onClose(); 
   };
 
   return (
@@ -47,39 +60,46 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Add New Income</Text>
 
-            <TextInput
+          <TextInput
             style={styles.input}
             placeholder="Amount"
             placeholderTextColor="#666"
             keyboardType="numeric"
             value={amount}
             onChangeText={setAmount}
-            />
+          />
 
-            <TextInput
+          {/* <TextInput
             style={styles.input}
             placeholder="Date (YYYY-MM-DD)"
             placeholderTextColor="#666"
             value={date}
             onChangeText={setDate}
-            />
+            /> */}
+
+          <DatePickerInput
+            style={styles.input}
+            placeholder="Date (YYYY-MM-DD)"
+            placeholderTextColor="#666"
+            onSelectDate={handleDateSelect}
+          />
           <Picker
-          selectedValue={incomeType}
-          onValueChange={(itemValue) => setIncomeType(itemValue)}
-          mode="dropdown"
-          style={[styles.picker, { borderWidth: 1, borderColor: 'white' }]}
+            selectedValue={incomeType}
+            onValueChange={(itemValue) => setIncomeType(itemValue)}
+            mode="dropdown"
+            style={[styles.picker, { borderWidth: 1, borderColor: 'white' }]}
           >
-          {incomeTypesList.map((type) => (
-            <Picker.Item key={type.id} label={type.name} value={type.id} />
-          ))}
+            {incomeTypesList.map((type) => (
+              <Picker.Item key={type.id} label={type.name} value={type.id} />
+            ))}
           </Picker>
 
           <View style={styles.buttonContainer}>
-            <Pressable onPress={onClose} style={{ backgroundColor:Colors.grey, paddingHorizontal:20, paddingVertical:10, borderRadius:10}}>
-              <Text style={{color:Colors.white}}>Cancel</Text>
+            <Pressable onPress={closeModal} style={{ backgroundColor: Colors.grey, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 }}>
+              <Text style={{ color: Colors.white }}>Cancel</Text>
             </Pressable>
-            <Pressable onPress={handleAdd}  style={{ backgroundColor:Colors.tintColor, paddingHorizontal:20, paddingVertical:10, borderRadius:10}}>
-              <Text style={{color:Colors.white}}>Add</Text>
+            <Pressable onPress={handleAdd} style={{ backgroundColor: Colors.tintColor, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 }}>
+              <Text style={{ color: Colors.white }}>Add</Text>
             </Pressable>
           </View>
         </View>
