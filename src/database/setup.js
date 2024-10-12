@@ -26,13 +26,14 @@ export const setupDatabase = async () => {
 
     // Enable write-ahead logging
     await db.execAsync(`PRAGMA journal_mode = WAL;`);
-    
+
 //override the use stict mode
 // Drop tables if they exist
 // await db.execAsync(`DROP TABLE IF EXISTS users;`);
 // await db.execAsync(`DROP TABLE IF EXISTS expense_type;`);
 // await db.execAsync(`DROP TABLE IF EXISTS spending;`);
 // await db.execAsync(`DROP TABLE IF EXISTS income;`);
+ await db.execAsync(`DROP TABLE IF EXISTS income_type;`);
     // Create User table
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS users (
@@ -92,6 +93,9 @@ export const setupDatabase = async () => {
       'Salary',
       'Investment',
       'Gift',
+      'Interest',
+      'Rental',
+      'Freelance',
       'Other',
     ];
     for (const type of defaultIncomeTypes) {

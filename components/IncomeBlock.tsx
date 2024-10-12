@@ -1,15 +1,29 @@
 import { FlatList, ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Colors from '@/constants/Colors'
 import { IncomeList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons';
-import {addIncome, getIncomes} from '@/src/database/incomeOperations'
+import {addIncome, getIncomes, getIncomeTypes} from '@/src/database/incomeOperations'
 import AddIncomeModal from "@/components/AddIncomeModal"
 
-export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }) {
+export default function IncomeBlock() {
 
     const [incomes, setIncomes] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [incomeList, setIncomeList] = useState<Partial<IncomeList>[]>([]);
+
+
+
+    useEffect(() => {
+        const fetchIncomeTypes = async () => {
+            const incomeTypes = await getIncomeTypes();
+            setIncomeList(incomeTypes);
+            // Assuming you want to do something with the fetched income types
+            
+        };
+
+        fetchIncomeTypes();
+    }, []);
 
     const handleAddIncome = async (incomeData: { name: any; amount: any; date: any; incomeType: any; }) => {
         await addIncome(incomeData.name, incomeData.amount, incomeData.date, incomeData.incomeType); // Add the income data to the database
@@ -33,11 +47,23 @@ export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }
         let lAmount = amount ? amount[1] : '00';
 
         let icon = <Feather name="dollar-sign" size={22} color={Colors.white} />
-        if (item.name == 'Freelancing') {
+        if (item.name == 'Investment') {
+            icon = <Feather name="trending-up"  size={22} color={Colors.white} />
+        }
+        else if (item.name == "Gift") {
+            icon = <Feather name="gift" size={22} color={Colors.white} />
+        }
+        else if (item.name == "Salary") {  
+            icon = <Feather name="briefcase" size={22} color={Colors.white} />
+        }
+        else if (item.name == "Interest") {
             icon = <Feather name="credit-card" size={22} color={Colors.white} />
         }
-        else if (item.name == "Interests") {
-            icon = <Feather name="briefcase" size={22} color={Colors.white} />
+        else if (item.name == "Rental") {
+            icon = <Feather name="home" size={22} color={Colors.white} />
+        }
+        else if (item.name == "Other") {
+            icon = <Feather name="box" size={22} color={Colors.white} />
         }
 
         return (

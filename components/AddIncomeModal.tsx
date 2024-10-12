@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Colors from '@/constants/Colors';
+import { getIncomeTypes } from '@/src/database/incomeOperations';
+
 
 const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
   const [incomeType, setIncomeType] = useState('salary'); // Default value for the picker
+  const [incomeTypesList, setIncomeTypeList] = useState([]);
+
+  useEffect(() => {
+    const fetchIncomeTypes = async () => {
+      const incomeTypes = await getIncomeTypes();
+      setIncomeTypeList(incomeTypes);
+    };
+  
+    fetchIncomeTypes();
+  }, []);
 
   const handleAdd = () => {
-    if (name.trim() && amount.trim() && date.trim() && incomeType) {
+    if ( amount.trim() && date.trim() && incomeType) {
       const parsedAmount = parseFloat(amount);
       if (isNaN(parsedAmount)) {
         alert('Please enter a valid amount.');
@@ -34,42 +46,32 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Add New Income</Text>
-          
-          <TextInput
-            style={styles.input}
-            placeholder="Income Name"
-            placeholderTextColor="white"
-            value={name}
-            onChangeText={setName}
-          />
 
-          <TextInput
+            <TextInput
             style={styles.input}
             placeholder="Amount"
-            placeholderTextColor="white"
+            placeholderTextColor="#666"
             keyboardType="numeric"
             value={amount}
             onChangeText={setAmount}
-          />
+            />
 
-          <TextInput
+            <TextInput
             style={styles.input}
             placeholder="Date (YYYY-MM-DD)"
-            placeholderTextColor="white"
+            placeholderTextColor="#666"
             value={date}
             onChangeText={setDate}
-          />
+            />
           <Picker
           selectedValue={incomeType}
           onValueChange={(itemValue) => setIncomeType(itemValue)}
           mode="dropdown"
           style={[styles.picker, { borderWidth: 1, borderColor: 'white' }]}
           >
-          <Picker.Item label="Salary" value="salary" />
-          <Picker.Item label="Bonus" value="bonus" />
-          <Picker.Item label="Freelance" value="freelance" />
-          <Picker.Item label="Investment" value="investment" />
-          <Picker.Item label="Other" value="other" />
+          {incomeTypesList.map((type) => (
+            <Picker.Item key={type.id} label={type.name} value={type.id} />
+          ))}
           </Picker>
 
           <View style={styles.buttonContainer}>
