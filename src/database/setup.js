@@ -33,7 +33,9 @@ export const setupDatabase = async () => {
 // await db.execAsync(`DROP TABLE IF EXISTS expense_type;`);
 // await db.execAsync(`DROP TABLE IF EXISTS spending;`);
 // await db.execAsync(`DROP TABLE IF EXISTS income;`);
- await db.execAsync(`DROP TABLE IF EXISTS income_type;`);
+// await db.execAsync(`DROP TABLE IF EXISTS income_type;`);
+
+//make income table empty
     // Create User table
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS users (

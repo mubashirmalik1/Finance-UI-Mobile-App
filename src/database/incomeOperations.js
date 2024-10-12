@@ -38,15 +38,24 @@ export const getIncomeTypeWithPrice = async (userId = 1) => {
     const db = await openDatabase();
     //get income Type and create left join with income table
     const rows = await db.getAllAsync(`
-      SELECT income.id, income.name, income.amount, income.date, income_type.name AS type
-      FROM income
-      LEFT JOIN income_type ON income.income_type_id = income_type.id
-      WHERE income.user_id = ?
-    `, [userId]);
+      SELECT income_type.id, income_type.name as type, SUM(income.amount) as total_amount
+      FROM income_type
+      LEFT JOIN income ON income_type.id = income.income_type_id
+      GROUP BY income_type.id, income_type.name
+    `);
 
-  
+    return rows;
    
   } catch (error) {
     console.error('Error fetching income:', error);
+  }
+}
+
+export const deleteAllIncome = async () => {
+  try {
+    const db = await openDatabase();
+    await db.runAsync('DELETE FROM income');
+  } catch (error) {
+    console.error('Error deleting all income:', error);
   }
 }

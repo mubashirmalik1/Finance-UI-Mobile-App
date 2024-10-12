@@ -9,7 +9,7 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
-  const [incomeType, setIncomeType] = useState('salary'); // Default value for the picker
+  const [incomeType, setIncomeType] = useState(1); // Default value for the picker
   const [incomeTypesList, setIncomeTypeList] = useState([]);
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import Colors from '@/constants/Colors'
 import { IncomeList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons';
-import {addIncome, getIncomes, getIncomeTypes} from '@/src/database/incomeOperations'
+import {addIncome, deleteAllIncome, getIncomeTypes, getIncomeTypeWithPrice} from '@/src/database/incomeOperations'
 import AddIncomeModal from "@/components/AddIncomeModal"
 
 export default function IncomeBlock() {
@@ -15,23 +15,28 @@ export default function IncomeBlock() {
 
 
     useEffect(() => {
-        const fetchIncomeTypes = async () => {
-            const incomeTypes = await getIncomeTypes();
+        const fetchIncomeTypesWithPrice = async () => {
+            const incomeTypes = await getIncomeTypeWithPrice();
             setIncomeList(incomeTypes);
-            // Assuming you want to do something with the fetched income types
-            
-        };
+        }
+        fetchIncomeTypesWithPrice();
 
-        fetchIncomeTypes();
+    //    const deleteIncomeData = async () => {
+    //     await deleteAllIncome(); // Delete the income from the database
+    //     const updatedIncomes = await getIncomeTypeWithPrice(); // Refresh the list
+    //     console.log(updatedIncomes); // Update the state with the new list
+    //    }
+    //    deleteIncomeData();
+
     }, []);
 
     const handleAddIncome = async (incomeData: { name: any; amount: any; date: any; incomeType: any; }) => {
-        await addIncome(incomeData.name, incomeData.amount, incomeData.date, incomeData.incomeType); // Add the income data to the database
-        const updatedIncomes = await getIncomes(); // Refresh the list
-        setIncomes(updatedIncomes); // Update the state with the new list
+        await addIncome(incomeData.name, incomeData.amount, incomeData.date, incomeData.incomeType); 
+        const updatedIncomes = await getIncomeTypeWithPrice();
+        setIncomeList(updatedIncomes); 
       };
 
-    const renderItems: ListRenderItem<Partial<IncomeList>> = ({ item, index }) => {
+    const renderItems = ({ item, index }) => {
         if (index == 0) {
             return (
               <Pressable onPress={() => setModalVisible(true)}>
@@ -42,27 +47,33 @@ export default function IncomeBlock() {
               </Pressable>
             )
           }
-        let amount = item.amount?.split('.');
-        let fAmount = amount ? amount[0] : '0';
-        let lAmount = amount ? amount[1] : '00';
+          let fAmount = '0';
+          let lAmount = '00';
+        if(item.total_amount){
+            let total_amount = item.total_amount.toString()
+            let amount = typeof total_amount === 'string' ? total_amount.split('.') : ['0', '00'];
+            fAmount = amount ? amount[0] : '0';
+            lAmount = amount ? amount[1]?amount[1]:'00' : '00'; 
+        };
+        
 
         let icon = <Feather name="dollar-sign" size={22} color={Colors.white} />
-        if (item.name == 'Investment') {
+        if (item.type == 'Investment') {
             icon = <Feather name="trending-up"  size={22} color={Colors.white} />
         }
-        else if (item.name == "Gift") {
+        else if (item.type == "Gift") {
             icon = <Feather name="gift" size={22} color={Colors.white} />
         }
-        else if (item.name == "Salary") {  
+        else if (item.type == "Salary") {  
             icon = <Feather name="briefcase" size={22} color={Colors.white} />
         }
-        else if (item.name == "Interest") {
+        else if (item.type == "Interest") {
             icon = <Feather name="credit-card" size={22} color={Colors.white} />
         }
-        else if (item.name == "Rental") {
+        else if (item.type == "Rental") {
             icon = <Feather name="home" size={22} color={Colors.white} />
         }
-        else if (item.name == "Other") {
+        else if (item.type == "Other") {
             icon = <Feather name="box" size={22} color={Colors.white} />
         }
 
@@ -90,7 +101,7 @@ export default function IncomeBlock() {
                     </Pressable>
                 </View>
 
-                <Text style={{ color: Colors.white }}>{item.name}</Text>
+                <Text style={{ color: Colors.white }}>{item.type}</Text>
                 <Text style={{ color: Colors.white, fontWeight: '800', fontSize: 22 }}>
                     {fAmount}.
                     <Text style={{ fontWeight: '500', fontSize: 16 }}>{lAmount}</Text>
