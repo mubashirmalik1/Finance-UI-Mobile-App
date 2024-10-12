@@ -59,7 +59,7 @@ export const setupDatabase = async () => {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS spending (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
+        name TEXT,
         amount REAL NOT NULL,
         date TEXT NOT NULL,
         user_id INTEGER,

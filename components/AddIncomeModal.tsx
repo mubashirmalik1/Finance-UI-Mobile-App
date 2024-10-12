@@ -47,11 +47,11 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
   };
 
   const closeModal = () => {
-    setName(''); 
+    setName('');
     setAmount('');
     setDate(new Date().toISOString().split('T')[0]);
-    setIncomeType(1); 
-    onClose(); 
+    setIncomeType(1);
+    onClose();
   };
 
   return (
@@ -60,6 +60,19 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Add New Income</Text>
 
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={incomeType}
+              onValueChange={(itemValue) => setIncomeType(itemValue)}
+              mode="dropdown"
+              style={[styles.picker, { borderWidth: 1, borderColor: 'white' }]}
+            >
+              {incomeTypesList.map((type) => (
+                <Picker.Item key={type.id} label={type.name} value={type.id} />
+              ))}
+            </Picker>
+          </View>
+          
           <TextInput
             style={styles.input}
             placeholder="Amount"
@@ -75,18 +88,6 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
             placeholderTextColor="#666"
             onSelectDate={handleDateSelect}
           />
-          <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={incomeType}
-            onValueChange={(itemValue) => setIncomeType(itemValue)}
-            mode="dropdown"
-            style={[styles.picker, { borderWidth: 1, borderColor: 'white' }]}
-          >
-            {incomeTypesList.map((type) => (
-              <Picker.Item key={type.id} label={type.name} value={type.id} />
-            ))}
-          </Picker>
-          </View>
 
           <View style={styles.buttonContainer}>
             <Pressable onPress={closeModal} style={{ backgroundColor: Colors.grey, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 }}>
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     padding: 10,
-    borderColor: '#ccc',
+    borderColor: '#666',
     borderWidth: 1,
     marginBottom: 20,
     borderRadius: 5,
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '100%',
-    borderColor: '#ccc',
+    borderColor: '#666',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,

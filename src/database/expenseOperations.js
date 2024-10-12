@@ -89,3 +89,16 @@ export const getExpenseTypes = async () => {
       console.error('Error fetching expense types:', error);
     }
   };
+
+export const addExpense = async ( amount, date, expenseType, userId = 1) => {
+    try {
+      const db = await openDatabase();
+      const result = await db.runAsync(
+        'INSERT INTO spending ( amount, date, expense_type_id, user_id) VALUES ( ?, ?, ?, ?)',
+        [ amount, date, expenseType, userId]
+      );
+      return result;
+    } catch (error) {
+      console.error('Error adding expense:', error);
+    }
+  }

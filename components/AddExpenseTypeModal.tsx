@@ -1,16 +1,48 @@
 import Colors from '@/constants/Colors';
-import React, { useState } from 'react';
+import { addExpense, getExpenseTypes } from '@/src/database/expenseOperations';
+import { Picker } from '@react-native-picker/picker';
+import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
+import DatePickerInput from './DatePicker';
 
 const AddExpenseTypeModal = ({ visible, onClose, onAddExpenseType }) => {
   const [name, setName] = useState('');
+  const [expenseType, setExpenseType] = useState(1);
+  const [expenseTypeList, setExpenseTypeList] = useState([]);
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+
+  useEffect(() => {
+    const fetchExpenseTypes = async () => {
+      try {
+        const types = await getExpenseTypes();
+        setExpenseTypeList(types);
+      } catch (error) {
+        console.error('Failed to fetch expense types:', error);
+      }
+    };
+
+    fetchExpenseTypes();
+  }, []);
+
+  const handleDateSelect = (date) => {
+    setDate(date); // Update state with selected date
+  };
+
+  const closeModal = () => {
+    setExpenseType(1);
+    setAmount('');
+    setDate(new Date().toISOString().split('T')[0]);
+    onClose();
+  };
 
   const handleAdd = () => {
-    if (name.trim()) {
-        console.log('test'+name);
-      onAddExpenseType(name); // Call the function passed via props
-      setName(''); // Reset the input after adding
-      onClose(); // Close the modal
+    if (expenseType, amount.trim() && date.trim()) {
+      addExpense(amount, date, expenseType); 
+      setAmount('');
+      setDate(new Date().toISOString().split('T')[0]);
+      setExpenseType(null);
+      onClose(); 
     } else {
       alert('Please enter a valid expense type name.');
     }
@@ -20,18 +52,37 @@ const AddExpenseTypeModal = ({ visible, onClose, onAddExpenseType }) => {
     <Modal visible={visible} transparent={true} animationType="slide">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Add New Expense Type</Text>
+          <Text style={styles.modalTitle}>Add New Expense</Text>
           
+          <View style={styles.pickerContainer}>
+            <Picker
+               selectedValue={expenseType}
+               onValueChange={(itemValue) => setExpenseType(itemValue)}
+              mode="dropdown"
+              style={styles.picker}
+            >
+               {expenseTypeList.map((item) => (
+                <Picker.Item key={item.id} label={item.name} value={item.id} />
+              ))}
+            </Picker>
+          </View>
           <TextInput
             style={styles.input}
-            placeholder="Expense Type Name"
-            value={name}
+            placeholder="Amount"
+            value={amount}
             placeholderTextColor="#666" 
-            onChangeText={setName}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+          />
+            <DatePickerInput
+            style={styles.input}
+            placeholder="Date (YYYY-MM-DD)"
+            placeholderTextColor="#666"
+            onSelectDate={handleDateSelect}
           />
 
           <View style={styles.buttonContainer}>
-            <Pressable onPress={onClose} style={{ backgroundColor:Colors.grey, paddingHorizontal:20, paddingVertical:10, borderRadius:10}}>
+            <Pressable onPress={closeModal} style={{ backgroundColor:Colors.grey, paddingHorizontal:20, paddingVertical:10, borderRadius:10}}>
                 <Text style={{color:Colors.white}}>Cancel</Text> 
             </Pressable>
             <Pressable onPress={handleAdd} style={{ backgroundColor:Colors.tintColor, paddingHorizontal:20, paddingVertical:10, borderRadius:10}}>
@@ -79,5 +130,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+  },
+  pickerContainer: {
+    width: '100%',
+    borderColor: '#666',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  picker: {
+    width: '100%',
+    height: 50,
+    color: Colors.white, // Picker text color
   },
 });
