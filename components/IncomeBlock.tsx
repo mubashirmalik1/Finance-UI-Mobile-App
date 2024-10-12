@@ -3,14 +3,15 @@ import React, { useState } from 'react'
 import Colors from '@/constants/Colors'
 import { IncomeList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons';
-import {addIncome} from '@/src/database/incomeOperations'
+import {addIncome, getIncomes} from '@/src/database/incomeOperations'
+import AddIncomeModal from "@/components/AddIncomeModal"
 
 export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }) {
 
     const [incomes, setIncomes] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const handleAddIncome = async (incomeData) => {
+    const handleAddIncome = async (incomeData: { name: any; amount: any; date: any; incomeType: any; }) => {
         await addIncome(incomeData.name, incomeData.amount, incomeData.date, incomeData.incomeType); // Add the income data to the database
         const updatedIncomes = await getIncomes(); // Refresh the list
         setIncomes(updatedIncomes); // Update the state with the new list
@@ -19,7 +20,7 @@ export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }
     const renderItems: ListRenderItem<Partial<IncomeList>> = ({ item, index }) => {
         if (index == 0) {
             return (
-              <Pressable onPress={() => alert('ok')}>
+              <Pressable onPress={() => setModalVisible(true)}>
                 <View style={styles.addItemBtn}>
                   <Feather name="plus" size={22} color={'#ccc'}></Feather>
                 </View>
@@ -87,6 +88,12 @@ export default function IncomeBlock({ incomeList }: { incomeList: IncomeList[] }
                 horizontal
                 showsHorizontalScrollIndicator={false}
             />
+            {/* AddIncomeModal */}
+        <AddIncomeModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            onAddIncome={handleAddIncome} // Pass the function to handle adding income
+        />
         </View>
     )
 }

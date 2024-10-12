@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, Button, StyleSheet, Picker } from 'react-native';
+import { Modal, View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import Colors from '@/constants/Colors';
 
 const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
@@ -58,23 +59,26 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
             value={date}
             onChangeText={setDate}
           />
-
-          {/* Picker for income type */}
           <Picker
-            selectedValue={incomeType}
-            style={styles.picker}
-            onValueChange={(itemValue) => setIncomeType(itemValue)}
+          selectedValue={incomeType}
+          onValueChange={(itemValue) => setIncomeType(itemValue)}
+          mode="dropdown"
+          style={[styles.picker, { borderWidth: 1, borderColor: 'white' }]}
           >
-            <Picker.Item label="Salary" value="salary" />
-            <Picker.Item label="Interest" value="interest" />
-            <Picker.Item label="Freelance" value="freelance" />
-            <Picker.Item label="Investments" value="investments" />
-            <Picker.Item label="Other" value="other" />
+          <Picker.Item label="Salary" value="salary" />
+          <Picker.Item label="Bonus" value="bonus" />
+          <Picker.Item label="Freelance" value="freelance" />
+          <Picker.Item label="Investment" value="investment" />
+          <Picker.Item label="Other" value="other" />
           </Picker>
 
           <View style={styles.buttonContainer}>
-            <Button title="Cancel" onPress={onClose} />
-            <Button title="Add" onPress={handleAdd} />
+            <Pressable onPress={onClose} style={{ backgroundColor:Colors.grey, paddingHorizontal:20, paddingVertical:10, borderRadius:10}}>
+              <Text style={{color:Colors.white}}>Cancel</Text>
+            </Pressable>
+            <Pressable onPress={handleAdd}  style={{ backgroundColor:Colors.tintColor, paddingHorizontal:20, paddingVertical:10, borderRadius:10}}>
+              <Text style={{color:Colors.white}}>Add</Text>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -94,14 +98,15 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '80%',
     padding: 20,
-    backgroundColor:Colors.black,
+    backgroundColor: Colors.black,
     borderRadius: 10,
     alignItems: 'center',
   },
   modalTitle: {
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: 20,
     fontWeight: 'bold',
+    color: Colors.white,
   },
   input: {
     width: '100%',
@@ -112,11 +117,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: 'white',  // Text color inside the input field
   },
+  pickerContainer: {
+    width: '100%',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
   picker: {
     width: '100%',
     height: 50,
-    marginBottom: 20,
-    color: 'black', // Picker text color
+    color: Colors.white, // Picker text color
   },
   buttonContainer: {
     flexDirection: 'row',

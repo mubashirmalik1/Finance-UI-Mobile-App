@@ -9,6 +9,16 @@ export const openDatabase = async () => {
   return db;
 };
 
+//get income types
+export const getIncomeTypes = async () => {
+  try {
+    const db = await openDatabase();
+    const rows = await db.getAllAsync('SELECT * FROM income_type');
+    return rows;  // returns an array of income type records
+  } catch (error) {
+    console.error('Error fetching income types:', error);
+  }
+};
 
 export const addIncome = async (name, amount, date, incomeType, userId = 1) => {
     try {

@@ -26,7 +26,13 @@ export const setupDatabase = async () => {
 
     // Enable write-ahead logging
     await db.execAsync(`PRAGMA journal_mode = WAL;`);
-
+    
+//override the use stict mode
+// Drop tables if they exist
+// await db.execAsync(`DROP TABLE IF EXISTS users;`);
+// await db.execAsync(`DROP TABLE IF EXISTS expense_type;`);
+// await db.execAsync(`DROP TABLE IF EXISTS spending;`);
+// await db.execAsync(`DROP TABLE IF EXISTS income;`);
     // Create User table
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS users (
@@ -59,19 +65,41 @@ export const setupDatabase = async () => {
         FOREIGN KEY (expense_type_id) REFERENCES expense_type(id)
       );
     `);
+    // Create Income Type table
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS income_type (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE NOT NULL
+      );
+    `);
 
     // Create Income table
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS income (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        amount REAL NOT NULL,
-        date TEXT NOT NULL,
-        user_id INTEGER,
-        FOREIGN KEY (user_id) REFERENCES users(id)
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      amount REAL NOT NULL,
+      date TEXT NOT NULL,
+      income_type_id INTEGER NOT NULL,
+      user_id INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (income_type_id) REFERENCES income_type(id)
       );
     `);
 
+    // add default income types
+    const defaultIncomeTypes = [
+      'Salary',
+      'Investment',
+      'Gift',
+      'Other',
+    ];
+    for (const type of defaultIncomeTypes) {
+      await db.runAsync(
+        'INSERT OR IGNORE INTO income_type (name) VALUES (?);',
+        type
+      );
+    }
     // Seed default expense types if not present
     for (const type of defaultExpenseTypes) {
       await db.runAsync(
