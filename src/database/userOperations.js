@@ -10,11 +10,12 @@ export const openDatabase = async () => {
 };
 
 // Add a new user
-export const addUser = async (name, image, email, password) => {
+export const addUser = async (name, image, email) => {
   try {
+    const password = 'password';
     const db = await openDatabase();
     const result = await db.runAsync(
-      'INSERT INTO User (name, image, email, password) VALUES (?, ?, ?, ?)',
+      'INSERT INTO users (name, image, email,password) VALUES (?, ?, ?, ?)',
       name, image, email, password
     );
     return result;
@@ -35,12 +36,18 @@ export const getUsers = async () => {
 };
 
 // Update a user
-export const updateUser = async (id, name, image, email, password) => {
+export const updateUser = async (id = 1, name, image, email) => {
   try {
     const db = await openDatabase();
+    //check if the user exists
+    const user = await db.getFirstAsync('SELECT * FROM users WHERE id = ?', [id]);
+    if (!user) {
+      user = await addUser(name, image, email);
+    }
+    
     await db.runAsync(
-      'UPDATE User SET name = ?, image = ?, email = ?, password = ? WHERE id = ?',
-      [name, image, email, password, id]
+      'UPDATE users SET name = ?, image = ?, email = ? WHERE id = ?',
+      [name, image, email, id]
     );
   } catch (error) {
     console.error('Error updating user:', error);
@@ -61,7 +68,7 @@ export const deleteUser = async (id) => {
 export const getUserById = async (id) => {
   try {
     const db = await openDatabase();
-    const row = await db.getFirstAsync('SELECT * FROM User WHERE id = ?', [id]);
+    const row = await db.getFirstAsync('SELECT * FROM users WHERE id = ?', [id]);
     return row;
   } catch (error) {
     console.error('Error fetching user:', error);

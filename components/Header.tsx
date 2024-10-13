@@ -1,9 +1,11 @@
 import { View, Text, Image, Pressable } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '@/constants/Colors'
+import { getUserById } from '@/src/database/userOperations'
 
-const Header = () => {
+const Header = ({fullName , image}) => {
+
   return (
     <SafeAreaView style={{
         flex:1,
@@ -17,11 +19,13 @@ const Header = () => {
             paddingHorizontal:20
         }}>
             <View style={{flexDirection:"row",alignItems:'center'}}>
-                <Image source={{uri:"https://avatar.iran.liara.run/public/5"}} 
+                <Image
+                //  source={{uri:"https://avatar.iran.liara.run/public/5"}} 
+                source={{uri:image}}
                 style={{height:50, width:50, borderRadius:50}}
                 />
                 <View style={{marginLeft:10}}>
-                    <Text style={{color:Colors.white, fontSize:12}}>Hey, User</Text>
+                    <Text style={{color:Colors.white, fontSize:12}}>Hey, <Text style={{textTransform:'capitalize'}}>{fullName}</Text></Text>
                     <Text style={{color:Colors.white, fontSize:16}}>{new Date().toLocaleString('default', { month: 'long' })} <Text style={{fontWeight:700}}> Budget</Text></Text>
                 </View>
                 

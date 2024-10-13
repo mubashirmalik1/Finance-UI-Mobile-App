@@ -1,17 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import Colors from '@/constants/Colors';
 import DynamicInput from '@/components/subs/Input';
+import * as ImagePicker from 'expo-image-picker'; // Import the image picker
+import {getUserById, updateUser} from '@/src/database/userOperations';
 
 export default function EditProfileScreen() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [image, setImage] = useState('https://avatar.iran.liara.run/public/5');
+
+
   const navigation = useNavigation();
   useEffect(()=>{
-    navigation.setOptions({headerShown:false})
+    navigation.setOptions({headerShown:false}),
+    getUserData()
    },[navigation])
+
+   const handleSave = async () => {
+    try {
+      await updateUser(1 ,fullName, image, email);
+      Alert.alert('Success', 'Profile saved successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      Alert.alert('Error', 'Failed to save profile.');
+    }
+  };
+
+  const getUserData = async () => {
+    try {
+      const response = await getUserById(1);
+      setFullName(response.name);
+      setEmail(response.email);
+      setImage(response.image);
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  }
+
+  const pickImage = async () => {
+    // Ask for permission to access the photo library
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    // Open image picker to select an image
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+     console.log(result);
+
+     if (!result.canceled && result.assets && result.assets.length > 0) {
+      const imageUri = result.assets[0].uri; // Access the uri from assets array
+      console.log(imageUri); // Log the correct uri
+      setImage(imageUri); // Set the selected image URI
+    }
+  };
   
 
   return (
@@ -22,10 +74,10 @@ export default function EditProfileScreen() {
 
       <View style={styles.profileImageContainer}>
         <Image
-          source={{ uri: 'https://avatar.iran.liara.run/public/5' }}
+          source={{ uri: image }}
           style={styles.profileImage}
         />
-        <TouchableOpacity style={styles.editImageButton}>
+        <TouchableOpacity style={styles.editImageButton} onPress={pickImage}>
           <Ionicons name="pencil" size={20} color="white" />
         </TouchableOpacity>
       </View>
@@ -47,7 +99,7 @@ export default function EditProfileScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.saveButton}>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>SAVE</Text>
         </TouchableOpacity>
       </View>
@@ -136,39 +188,3 @@ const styles = StyleSheet.create({
 
   },
 });
-
-
-// import Colors from '@/constants/Colors';
-// import Ionicons from '@expo/vector-icons/Ionicons';
-// import { useNavigation } from 'expo-router';
-// import { useEffect } from 'react';
-// import { StyleSheet, View, Text } from 'react-native';
-
-
-// export default function profile() {
-//   const navigation = useNavigation();
-
-//   useEffect(()=>{
-//     navigation.setOptions({headerShown:false})
-//   })
-//   return (
-//     <View style={styles.container}>
-//     <Text style = {styles.text}>
-//       Hello to index page
-//     </Text>
-//   </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container:{
-//     flex:1,
-//     justifyContent:'center',
-//     alignItems:'center',
-//     backgroundColor:Colors.black
-//    },
-//    text:{
-//     color:Colors.white
-//    }
-  
-// });
