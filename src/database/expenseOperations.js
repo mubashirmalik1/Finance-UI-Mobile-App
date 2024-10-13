@@ -119,3 +119,13 @@ export const addExpense = async ( name,amount, date, expenseType, userId = 1) =>
       console.error('Error fetching expense:', error);
     }
   }
+
+  export const getTotalExense = async (userId = 1) => { 
+    try {
+      const db = await openDatabase();
+      const row = await db.getFirstAsync('SELECT SUM(amount) as total FROM spending');
+      return row;
+    } catch (error) {
+      console.error('Error fetching total expense:', error);
+    }
+  }

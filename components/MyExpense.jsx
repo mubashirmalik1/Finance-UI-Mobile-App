@@ -1,9 +1,31 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import Colors from '@/constants/Colors'
 import { PieChart } from 'react-native-gifted-charts';
+import { getTotalExense } from '@/src/database/expenseOperations';
 
 const MyExpense = () => {
+    const [amount, setAmount] = useState('0');
+
+    useEffect(() => {
+      // Fetch the total expense amount from the database
+      const fetchExpenseAmount = async () => {
+        try {
+          const totalAmount = await getTotalExense();
+          console.log('totalAmount', totalAmount);
+          if (totalAmount){
+            setAmount(totalAmount.total);
+          }
+         
+        } catch (error) {
+          console.error('Error fetching total expense amount:', error);
+        }
+      };
+  
+      fetchExpenseAmount();
+    }
+    , []);
+
     const pieData = [
         {
           value: 47,
@@ -22,8 +44,8 @@ const MyExpense = () => {
         My <Text style={{ fontWeight:'900' }}>Expense</Text>
       </Text>
       <Text style={{ color: Colors.white, fontSize: 36, fontWeight: 700 }}>
-        $1432.
-        <Text style={{ fontSize: 16 }}>11</Text>
+        Rs {amount}.
+        <Text style={{ fontSize: 16 }}>00</Text>
       </Text>
     </View>
     <View>

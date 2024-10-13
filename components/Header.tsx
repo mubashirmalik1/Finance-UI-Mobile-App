@@ -21,8 +21,8 @@ const Header = () => {
                 style={{height:50, width:50, borderRadius:50}}
                 />
                 <View style={{marginLeft:10}}>
-                    <Text style={{color:Colors.white, fontSize:12}}>Hey, Jinny</Text>
-                    <Text style={{color:Colors.white, fontSize:16}}>Your <Text style={{fontWeight:700}}>Budget</Text></Text>
+                    <Text style={{color:Colors.white, fontSize:12}}>Hey, User</Text>
+                    <Text style={{color:Colors.white, fontSize:16}}>{new Date().toLocaleString('default', { month: 'long' })} <Text style={{fontWeight:700}}> Budget</Text></Text>
                 </View>
                 
             </View>
