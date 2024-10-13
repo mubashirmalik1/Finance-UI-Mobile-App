@@ -1,12 +1,23 @@
 import { FlatList, ListRenderItem, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Colors from '@/constants/Colors'
 import { SpendingList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons'
+import { getCurrentMonthExpense } from '@/src/database/expenseOperations'
 
-const SpendingBlock = ({ spendingList }: { spendingList: SpendingList[] }) => {
+const SpendingBlock = () => {
 
-    const Spending = spendingList.map((item) => {
+    const [SpendingList, setSpendingList] =useState([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await getCurrentMonthExpense();
+            setSpendingList(response);
+        }
+        fetchData();
+    }, [])
+
+    const Spending = SpendingList.map((item) => {
         return (
             <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginVertical:10 }}>
                 <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -20,7 +31,7 @@ const SpendingBlock = ({ spendingList }: { spendingList: SpendingList[] }) => {
                 </View>
                 <View>
                     <Text style={{color:Colors.white,fontSize:17, fontWeight:'700'}}>
-                        ${item.amount}
+                        Rs {item.amount}
                     </Text>
                 </View>
             </View>
@@ -30,7 +41,7 @@ const SpendingBlock = ({ spendingList }: { spendingList: SpendingList[] }) => {
     return (
         <View>
             <Text style={{ color: Colors.white, fontSize: 16 }}>
-                May <Text style={{ fontWeight: '900' }}>Spendings</Text>
+                {new Date().toLocaleString('default', { month: 'long' })} <Text style={{ fontWeight: '900' }}>Spendings</Text>
             </Text>
             <View>
            {Spending}
