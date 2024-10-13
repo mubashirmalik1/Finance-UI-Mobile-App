@@ -17,7 +17,7 @@ const Header = () => {
             paddingHorizontal:20
         }}>
             <View style={{flexDirection:"row",alignItems:'center'}}>
-                <Image source={{uri:"https://i.pravatar.cc/150?img=54"}} 
+                <Image source={{uri:"https://avatar.iran.liara.run/public/5"}} 
                 style={{height:50, width:50, borderRadius:50}}
                 />
                 <View style={{marginLeft:10}}>
