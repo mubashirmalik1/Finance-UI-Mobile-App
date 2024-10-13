@@ -5,7 +5,13 @@ import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
 import DatePickerInput from './DatePicker';
 
-const AddExpenseTypeModal = ({ visible, onClose, onAddExpenseType }) => {
+interface AddExpenseTypeModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onAddExpenseType: () => void;
+}
+
+const AddExpenseTypeModal: React.FC<AddExpenseTypeModalProps> = ({ visible, onClose, onAddExpenseType }) => {
   const [name, setName] = useState('');
   const [expenseType, setExpenseType] = useState(1);
   const [expenseTypeList, setExpenseTypeList] = useState([]);
@@ -25,7 +31,7 @@ const AddExpenseTypeModal = ({ visible, onClose, onAddExpenseType }) => {
     fetchExpenseTypes();
   }, []);
 
-  const handleDateSelect = (date) => {
+  const handleDateSelect = (date: React.SetStateAction<string>) => {
     setDate(date); // Update state with selected date
   };
 
