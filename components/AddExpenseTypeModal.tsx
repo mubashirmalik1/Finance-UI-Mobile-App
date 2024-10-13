@@ -37,11 +37,11 @@ const AddExpenseTypeModal = ({ visible, onClose, onAddExpenseType }) => {
   };
 
   const handleAdd = () => {
-    if (expenseType, amount.trim() && date.trim()) {
-      addExpense(amount, date, expenseType); 
+    if (name.trim(),expenseType, amount.trim() && date.trim()) {
+      addExpense(name,amount, date, expenseType); 
       setAmount('');
       setDate(new Date().toISOString().split('T')[0]);
-      setExpenseType(null);
+      setExpenseType(1);
       onClose(); 
     } else {
       alert('Please enter a valid expense type name.');
@@ -53,6 +53,13 @@ const AddExpenseTypeModal = ({ visible, onClose, onAddExpenseType }) => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Add New Expense</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Title"
+            value={name}
+            placeholderTextColor="#666" 
+            onChangeText={setName}
+          />
           
           <View style={styles.pickerContainer}>
             <Picker

@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Colors from '@/constants/Colors'
 //import { ExpenseList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons'
-import { getExpenseTypes, addExpenseType } from '@/src/database/expenseOperations'
+import { getExpenseTypes, addExpenseType, getExpenseTypeWithPrice } from '@/src/database/expenseOperations'
 import AddExpenseTypeModal from "@/components/AddExpenseTypeModal"
 
 // Define the ExpenseList type
@@ -23,6 +23,7 @@ const ExpenseBlock = () => {
   // Fetch expenses from SQLite database on component mount
   useEffect(() => {
     fetchExpenseTypes();
+    fetchExpenseTypesWithPrice();
   }, []);
 
   const fetchExpenseTypes = async () => {
@@ -44,6 +45,20 @@ const ExpenseBlock = () => {
       //  setLoading(false);
     }
   };
+
+  const fetchExpenseTypesWithPrice = async () => {
+    try {
+      const types = await getExpenseTypeWithPrice();
+      const expenses: ExpenseList[] = [];
+      console.log('data enter');
+      console.log(types);
+      
+    } catch (error) {
+      console.error('Error fetching expense types:', error);
+    } finally {
+      //  setLoading(false);
+    }
+  }
 
   const handleAddExpenseType = async (name: any) => {
     try {

@@ -90,15 +90,32 @@ export const getExpenseTypes = async () => {
     }
   };
 
-export const addExpense = async ( amount, date, expenseType, userId = 1) => {
+export const addExpense = async ( name,amount, date, expenseType, userId = 1) => {
     try {
       const db = await openDatabase();
       const result = await db.runAsync(
-        'INSERT INTO spending ( amount, date, expense_type_id, user_id) VALUES ( ?, ?, ?, ?)',
-        [ amount, date, expenseType, userId]
+        'INSERT INTO spending ( name ,amount, date, expense_type_id, user_id) VALUES ( ?,?, ?, ?, ?)',
+        [ name ,amount, date, expenseType, userId]
       );
       return result;
     } catch (error) {
       console.error('Error adding expense:', error);
+    }
+  }
+
+  export const getExpenseTypeWithPrice = async (userId = 1) => {
+    try {
+      const db = await openDatabase();
+      //get expense Type and create left join with spending table
+      const rows = await db.getAllAsync(`
+        SELECT expense_type.id, expense_type.name as type, SUM(spending.amount) as total_amount
+        FROM expense_type
+        LEFT JOIN spending ON expense_type.id = spending.expense_type_id
+        GROUP BY expense_type.id, expense_type.name
+      `);
+  
+      return rows;
+    } catch (error) {
+      console.error('Error fetching expense:', error);
     }
   }
