@@ -20,7 +20,6 @@ const Header = ({fullName , image}) => {
         }}>
             <View style={{flexDirection:"row",alignItems:'center'}}>
                 <Image
-                //  source={{uri:"https://avatar.iran.liara.run/public/5"}} 
                 source={{uri:image}}
                 style={{height:50, width:50, borderRadius:50}}
                 />
