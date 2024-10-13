@@ -60,6 +60,14 @@ const AddIncomeModal = ({ visible, onClose, onAddIncome }) => {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Add New Income</Text>
 
+          <TextInput
+            style={styles.input}
+            placeholder="Title"
+            placeholderTextColor="#666"
+            value={name}
+            onChangeText={setName}
+          />
+
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={incomeType}

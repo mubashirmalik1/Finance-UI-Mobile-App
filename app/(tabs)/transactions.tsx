@@ -5,6 +5,7 @@ import { useNavigation } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { getAllExpenses } from '@/src/database/expenseOperations';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getAllIncomes } from '@/src/database/incomeOperations';
 
 interface Spending {
   id: string;
@@ -22,14 +23,13 @@ export default function BillingScreen() {
   const [activeTab, setActiveTab] = useState('My Spendings');
   const [searchQuery, setSearchQuery] = useState('');
   const [spendingList, setSpendingList] = useState<Spending[]>([]);
-  const [showFilterModal, setShowFilterModal] = useState(false);
-  const [filterType, setFilterType] = useState<'month' | 'date' | null>(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [incomeList, setIncomeList] = useState([]);
   const navigation = useNavigation();
+
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
     getAllSpending();
+    getAllIncome();
   }, [navigation])
 
   const getAllSpending = async () => {
@@ -37,35 +37,39 @@ export default function BillingScreen() {
     setSpendingList(response);
   }
 
-  const handleFilterPress = () => {
-    setShowFilterModal(true);
-  };
+  const getAllIncome = async () => {
+    const response = await getAllIncomes();
+    console.log(response);
+    setIncomeList(response);
+  }
 
-  const handleFilterSelect = (type: 'month' | 'date') => {
-    setFilterType(type);
-    if (type === 'date') {
-      setShowDatePicker(true);
-    } else {
-      setShowFilterModal(false);
-      // Implement month filter logic here
-      console.log('Filter by month');
-    }
-  };
 
-  const handleDateChange = (event: any, date?: Date) => {
-    setShowDatePicker(false);
-    if (date) {
-      setSelectedDate(date);
-      setShowFilterModal(false);
-      // Implement date filter logic here
-      console.log('Filter by date:', date.toISOString());
-    }
-  };
+
 
 
 
 
   const renderInvoiceItem = ({ item, index }: { item: Spending, index: number }) => (
+    <TouchableOpacity style={styles.invoiceItem}>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 10 }} key={index}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ backgroundColor: Colors.black, padding: 13, borderRadius: 50, marginRight: 10 }}>
+            <Feather name="arrow-up" size={22} color={Colors.white} />
+          </View>
+          <View style={{ gap: 6 }}>
+            <Text style={{ color: Colors.white, fontSize: 17, fontWeight: '700' }}>{item.name}</Text>
+            <Text style={{ color: Colors.white }}>{item.date}</Text>
+          </View>
+        </View>
+        <View>
+          <Text style={{ color: Colors.white, fontSize: 17, fontWeight: '700' }}>
+            Rs {item.amount}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+  const renderIncomeItem  = ({ item, index }) => (
     <TouchableOpacity style={styles.invoiceItem}>
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 10 }} key={index}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -116,49 +120,23 @@ export default function BillingScreen() {
             onChangeText={setSearchQuery}
           />
         </View>
-        <TouchableOpacity style={styles.filterButton} onPress={handleFilterPress}>
+        <TouchableOpacity style={styles.filterButton}>
           <Ionicons name="filter" size={20} color="white" />
           <Text style={styles.filterButtonText}>Filter</Text>
         </TouchableOpacity>
       </View>
-
-      <FlatList
-        data={spendingList}
-        renderItem={renderInvoiceItem}
+     {activeTab === 'My Income' ? <FlatList
+        data={incomeList}
+        renderItem={renderIncomeItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
-      />
-
-      <Modal
-        visible={showFilterModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowFilterModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowFilterModal(false)}
-        >
-          <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.filterOption} onPress={() => handleFilterSelect('month')}>
-              <Text style={styles.filterOptionText}>Filter by Month</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.filterOption} onPress={() => handleFilterSelect('date')}>
-              <Text style={styles.filterOptionText}>Filter by Specific Date</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
+      />: <FlatList
+      data={spendingList}
+      renderItem={renderInvoiceItem}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={styles.listContainer}
+    />
+      }
     </SafeAreaView>
   );
 }

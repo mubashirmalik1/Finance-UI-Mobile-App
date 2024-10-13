@@ -62,3 +62,18 @@ export const deleteAllIncome = async () => {
     console.error('Error deleting all income:', error);
   }
 }
+
+export const getAllIncomes = async (userId = 1, date = null) => {
+  try {
+    const db = await openDatabase();
+    let rows = [];
+    if (date) {
+      rows = await db.getAllAsync('SELECT * FROM income WHERE date = ?', [ date]);
+    } else {
+      rows = await db.getAllAsync('SELECT * FROM income',);
+    }
+    return rows;
+  } catch (error) {
+    console.error('Error fetching income:', error);
+  }
+}
