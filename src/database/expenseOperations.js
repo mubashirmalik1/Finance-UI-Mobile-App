@@ -108,12 +108,16 @@ export const getExpenseTypeWithPrice = async (userId = 1) => {
     const db = await openDatabase();
     //get expense Type and create left join with spending table
     const rows = await db.getAllAsync(`
-        SELECT expense_type.id, expense_type.name as type, SUM(spending.amount) as total_amount, spending.date
-        FROM expense_type
-        LEFT JOIN spending ON expense_type.id = spending.expense_type_id
-        WHERE strftime('%m', spending.date) = strftime('%m', 'now')
+      SELECT expense_type.id, 
+      expense_type.name AS type, 
+      IFNULL(SUM(spending.amount), 0) AS total_amount, 
+      spending.date
+      FROM expense_type
+      LEFT JOIN spending 
+        ON expense_type.id = spending.expense_type_id 
+        AND strftime('%m', spending.date) = strftime('%m', 'now') 
         AND strftime('%Y', spending.date) = strftime('%Y', 'now')
-        GROUP BY expense_type.id, expense_type.name
+      GROUP BY expense_type.id, expense_type.name;
       `);
 
     return rows;
@@ -139,7 +143,7 @@ export const getTotalExense = async (userId = 1) => {
   }
 }
 
-export const getCurrentMonthExpense = async (userId = 1) => { 
+export const getCurrentMonthExpense = async (userId = 1) => {
   try {
     const db = await openDatabase();
     const rows = await db.getAllAsync(

@@ -38,9 +38,12 @@ export const getIncomeTypeWithPrice = async (userId = 1) => {
     const db = await openDatabase();
     //get income Type and create left join with income table
     const rows = await db.getAllAsync(`
-      SELECT income_type.id, income_type.name as type, SUM(income.amount) as total_amount
+       SELECT income_type.id, income_type.name as type, IFNULL(SUM(income.amount), 0) as total_amount
       FROM income_type
-      LEFT JOIN income ON income_type.id = income.income_type_id
+      LEFT JOIN income 
+        ON income_type.id = income.income_type_id 
+        AND strftime('%m', income.date) = strftime('%m', 'now') 
+        AND strftime('%Y', income.date) = strftime('%Y', 'now')
       GROUP BY income_type.id, income_type.name
     `);
 
