@@ -32,6 +32,7 @@ const AddExpenseTypeModal = ({ visible, onClose, onAddExpenseType }) => {
   const closeModal = () => {
     setExpenseType(1);
     setAmount('');
+    setName('');
     setDate(new Date().toISOString().split('T')[0]);
     onClose();
   };
@@ -39,9 +40,11 @@ const AddExpenseTypeModal = ({ visible, onClose, onAddExpenseType }) => {
   const handleAdd = () => {
     if (name.trim(),expenseType, amount.trim() && date.trim()) {
       addExpense(name,amount, date, expenseType); 
+      setName('');
       setAmount('');
       setDate(new Date().toISOString().split('T')[0]);
       setExpenseType(1);
+      onAddExpenseType();
       onClose(); 
     } else {
       alert('Please enter a valid expense type name.');

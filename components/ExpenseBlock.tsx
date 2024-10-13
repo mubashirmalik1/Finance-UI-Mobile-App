@@ -1,7 +1,6 @@
 import { FlatList, ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import Colors from '@/constants/Colors'
-//import { ExpenseList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons'
 import { getExpenseTypes, addExpenseType, getExpenseTypeWithPrice } from '@/src/database/expenseOperations'
 import AddExpenseTypeModal from "@/components/AddExpenseTypeModal"
@@ -18,63 +17,31 @@ type ExpenseList = {
 const ExpenseBlock = () => {
   const [expenseList, setExpenseList] = useState<ExpenseList[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
- // const count = useRef(2000); //for testing counter
-
-  // Fetch expenses from SQLite database on component mount
   useEffect(() => {
-    fetchExpenseTypes();
     fetchExpenseTypesWithPrice();
   }, []);
 
-  const fetchExpenseTypes = async () => {
-    try {
-      const types = await getExpenseTypes();
-      const expenses: ExpenseList[] = [];
-      for (const row of types) {
-        expenses.push({
-          id: row.id,
-          name: row.name,
-          price: '0.00',
-          percentage: '0'
-        });
-      }
-      setExpenseList(expenses);
-    } catch (error) {
-      console.error('Error fetching expense types:', error);
-    } finally {
-      //  setLoading(false);
-    }
-  };
 
   const fetchExpenseTypesWithPrice = async () => {
     try {
       const types = await getExpenseTypeWithPrice();
-      const expenses: ExpenseList[] = [];
-      console.log('data enter');
-      console.log(types);
+      setExpenseList(types);
       
     } catch (error) {
       console.error('Error fetching expense types:', error);
-    } finally {
-      //  setLoading(false);
-    }
+    } 
   }
 
-  const handleAddExpenseType = async (name: any) => {
+  const handleAddExpenseType = async () => {
     try {
-     // count.current += 1;
-      await addExpenseType(name);
-      const updatedTypes = await getExpenseTypes(); // Refresh the list after adding
-      // Sort by id in descending order (latest first)
-      const sortedTypes = updatedTypes.sort((a: { id: number }, b: { id: number }) => b.id - a.id);
-      console.log('data enter');
-      setExpenseList(sortedTypes);
+      const updatedTypes = await getExpenseTypeWithPrice(); // Refresh the list after adding
+      setExpenseList(updatedTypes);
     } catch (error) {
       console.error('Error adding expense type:', error);
     }
   };
 
-  const renderItem: ListRenderItem<Partial<ExpenseList>> = ({ item, index }) => {
+  const renderItem= ({ item, index }) => {
     if (index == 0) {
       return (
         <Pressable onPress={() => setModalVisible(true)}>
@@ -85,9 +52,15 @@ const ExpenseBlock = () => {
         </Pressable>
       )
     }
-    let amount = item.price?.split('.');
-    let fAmount = amount ? amount[0] : '0';
-    let lAmount = amount ? amount[1] : '00';
+    let fAmount = '0';
+    let lAmount = '00';
+    if(item.total_amount != null){
+      item.total_amount = item.total_amount.toString();
+      let amount = item.total_amount?.split('.');
+      fAmount = amount ? amount[0] : '0';
+      lAmount = amount ? amount[1]? amount[1]:'00' : '00';
+    }
+
     return (
       <View style={[styles.ExpenseBlock, {
         backgroundColor:
@@ -104,7 +77,7 @@ const ExpenseBlock = () => {
               : item.name == 'Saving'
                 ? Colors.black
                 : Colors.white
-        }]}>{item.name}</Text>
+        }]}>{item.type}</Text>
 
         <Text style={[styles.expenseBlockTxt2, {
           color:
@@ -113,7 +86,7 @@ const ExpenseBlock = () => {
               : item.name == 'Saving'
                 ? Colors.black
                 : Colors.white
-        }]}>${fAmount}.
+        }]}>Rs {fAmount}.
           <Text style={{ fontSize: 16 }}>{lAmount}</Text>
         </Text>
 
@@ -154,7 +127,7 @@ const styles = StyleSheet.create({
   ExpenseBlock: {
     backgroundColor: Colors.tintColor,
     padding: 15,
-    width: 100,
+    width: 130,
     marginRight: 15,
     borderRadius: 15,
     marginTop: 30,
