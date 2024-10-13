@@ -4,7 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '@/constants/Colors'
 import { getUserById } from '@/src/database/userOperations'
 
-const Header = ({fullName , image}) => {
+interface HeaderProps {
+  fullName: string;
+  image: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ fullName, image }) => {
 
   return (
     <SafeAreaView style={{
@@ -30,11 +35,11 @@ const Header = ({fullName , image}) => {
                 
             </View>
             <View>
-                <Pressable style={{borderRadius:10, borderColor: Colors.white, borderWidth:1,paddingHorizontal:10, paddingVertical:10}} >
+                {/* <Pressable style={{borderRadius:10, borderColor: Colors.white, borderWidth:1,paddingHorizontal:10, paddingVertical:10}} >
                     <Text style={{color:Colors.white}}>
                       My Transactions 
                     </Text>
-                    </Pressable>
+                    </Pressable> */}
             </View>
         </View>
         

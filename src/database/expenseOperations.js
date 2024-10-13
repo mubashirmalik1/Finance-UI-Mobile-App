@@ -154,3 +154,20 @@ export const getCurrentMonthExpense = async (userId = 1) => {
     console.error('Error fetching current month expense:', error);
   }
 }
+
+export const getAllExpenses = async (userId = 1 , date = null) => {
+  try {
+    const db = await openDatabase();
+    if(date){
+      const rows = await db.getAllAsync(
+        `SELECT * FROM spending WHERE strftime('%m', date) = strftime('%m', ?) AND strftime('%Y', date) = strftime('%Y', ?)`,
+        [date, date]
+      );
+      return rows;
+    }
+    const rows = await db.getAllAsync('SELECT * FROM spending');
+    return rows;
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
+  }
+}

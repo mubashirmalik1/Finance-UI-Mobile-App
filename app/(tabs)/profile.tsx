@@ -56,11 +56,8 @@ export default function EditProfileScreen() {
       quality: 1,
     });
 
-     console.log(result);
-
      if (!result.canceled && result.assets && result.assets.length > 0) {
       const imageUri = result.assets[0].uri; // Access the uri from assets array
-      console.log(imageUri); // Log the correct uri
       setImage(imageUri); // Set the selected image URI
     }
   };

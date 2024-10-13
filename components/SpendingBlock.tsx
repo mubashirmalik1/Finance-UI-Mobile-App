@@ -5,6 +5,7 @@ import { SpendingList } from '@/scripts/types'
 import { Feather } from '@expo/vector-icons'
 import { getCurrentMonthExpense } from '@/src/database/expenseOperations'
 
+
 const SpendingBlock = () => {
 
     const [SpendingList, setSpendingList] =useState([])
@@ -17,12 +18,13 @@ const SpendingBlock = () => {
         fetchData();
     }, [])
 
-    const Spending = SpendingList.map((item) => {
+    const Spending = SpendingList.map((item ,index) => {
+       
         return (
-            <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginVertical:10 }}>
+            <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginVertical:10 }} key={index}>
                 <View style={{flexDirection:'row', alignItems:'center'}}>
                     <View style={{backgroundColor:Colors.grey, padding:13, borderRadius:50, marginRight:10}}>
-                        <Feather name="dollar-sign" size={22} color={Colors.white} />
+                        <Feather name="arrow-up" size={22} color={Colors.white} />
                     </View>
                     <View style={{gap:6}}>
                         <Text style={{color:Colors.white, fontSize:17, fontWeight:'700'}}>{item.name}</Text>
